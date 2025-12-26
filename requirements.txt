@@ -6,19 +6,19 @@ newspaper3k==0.2.8
 
 # NLP & Embeddings
 sentence-transformers==2.5.1
-scikit-learn==1.3.2
+scikit-learn==1.5.0
 numpy==1.24.4
 
 # Vector search
 faiss-cpu==1.7.4
 
 # LLM
-torch==2.1.2
-transformers==4.39.3
+torch==2.8.0
+transformers==4.53.0
 accelerate==0.27.2
 
 # Utilities
-tqdm==4.66.2
+tqdm==4.66.3
 
 
 
