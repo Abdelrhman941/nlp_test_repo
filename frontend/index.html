@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pet Health Assistant</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="app-container">
         <!-- Sidebar -->
@@ -52,18 +54,23 @@
                 </div>
             </div>
 
+            <!-- Scroll to Bottom Button -->
+            <button id="scroll-to-bottom" class="scroll-to-bottom" style="display: none;">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 4V16M10 16L4 10M10 16L16 10" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
+
             <!-- Input Area -->
             <div class="input-container">
                 <div class="input-wrapper">
-                    <textarea
-                        id="message-input"
-                        class="message-input"
-                        placeholder="Ask about your pet's health..."
-                        rows="1"
-                    ></textarea>
+                    <textarea id="message-input" class="message-input" placeholder="Ask about your pet's health..."
+                        rows="1"></textarea>
                     <button id="send-btn" class="send-btn" disabled>
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M2 10L18 10M18 10L11 3M18 10L11 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 10L18 10M18 10L11 3M18 10L11 17" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </button>
                 </div>
@@ -73,4 +80,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>

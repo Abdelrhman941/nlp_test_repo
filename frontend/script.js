@@ -16,6 +16,7 @@ const chatTitle = document.getElementById('chat-title');
 const welcomeScreen = document.getElementById('welcome-screen');
 const sidebarToggle = document.getElementById('sidebar-toggle');
 const sidebar = document.querySelector('.sidebar');
+const scrollToBottomBtn = document.getElementById('scroll-to-bottom');
 
 // ============================================
 // Initialization
@@ -25,8 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
     renderChatList();
     setupEventListeners();
 
-    // Load last active chat or create new one
-    if (chats.length > 0) {
+    // AUTO CHAT SESSION: Create default chat if no chats exist
+    if (chats.length === 0) {
+        createDefaultChat();
+    } else {
+        // Load last active chat
         const lastChat = chats[chats.length - 1];
         loadChat(lastChat.id);
     }
@@ -49,6 +53,17 @@ function setupEventListeners() {
 
     // Sidebar toggle
     sidebarToggle.addEventListener('click', toggleSidebar);
+
+    // Scroll to bottom button
+    scrollToBottomBtn.addEventListener('click', () => {
+        messagesContainer.scrollTo({
+            top: messagesContainer.scrollHeight,
+            behavior: 'smooth'
+        });
+    });
+
+    // Monitor scroll position for scroll-to-bottom button
+    messagesContainer.addEventListener('scroll', handleScroll);
 
     // Example prompts
     document.querySelectorAll('.example-prompt').forEach(btn => {
@@ -83,17 +98,59 @@ function handleInputKeydown(e) {
 // Chat Management
 // ============================================
 
+function createDefaultChat() {
+    // Create a default "Untitled" chat automatically
+    const chatId = 'chat_' + Date.now();
+    const defaultChat = {
+        id: chatId,
+        title: 'Untitled',
+        created: new Date().toISOString(),
+        messages: []
+    };
+
+    chats.push(defaultChat);
+    localStorage.setItem('chats', JSON.stringify(chats));
+
+    currentChatId = chatId;
+    renderChatList();
+
+    // Update UI
+    welcomeScreen.style.display = 'block';
+    chatTitle.textContent = 'Untitled';
+    messagesContainer.innerHTML = '';
+
+    // Highlight the new chat in sidebar
+    document.querySelectorAll('.chat-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.chatId === chatId);
+    });
+}
+
 function createNewChat() {
-    currentChatId = null;
+    // Create a new "Untitled" chat
+    const chatId = 'chat_' + Date.now();
+    const newChat = {
+        id: chatId,
+        title: 'Untitled',
+        created: new Date().toISOString(),
+        messages: []
+    };
+
+    chats.push(newChat);
+    localStorage.setItem('chats', JSON.stringify(chats));
+
+    currentChatId = chatId;
+    renderChatList();
+
+    // Clear UI
     messagesContainer.innerHTML = '';
     welcomeScreen.style.display = 'block';
-    chatTitle.textContent = 'Pet Health Assistant';
+    chatTitle.textContent = 'Untitled';
     messageInput.value = '';
     messageInput.focus();
 
-    // Remove active state from all chat items
+    // Update active state
     document.querySelectorAll('.chat-item').forEach(item => {
-        item.classList.remove('active');
+        item.classList.toggle('active', item.dataset.chatId === chatId);
     });
 }
 
@@ -125,7 +182,7 @@ function saveChat(chatId, userMessage, assistantMessage, sources) {
     let chat = chats.find(c => c.id === chatId);
 
     if (!chat) {
-        // Create new chat
+        // This should not happen anymore, but keep as fallback
         chat = {
             id: chatId,
             title: userMessage.substring(0, 30) + (userMessage.length > 30 ? '...' : ''),
@@ -133,6 +190,9 @@ function saveChat(chatId, userMessage, assistantMessage, sources) {
             messages: []
         };
         chats.push(chat);
+    } else if (chat.title === 'Untitled' && chat.messages.length === 0) {
+        // Update title from "Untitled" to first message
+        chat.title = userMessage.substring(0, 30) + (userMessage.length > 30 ? '...' : '');
     }
 
     // Add messages
@@ -153,14 +213,25 @@ function saveChat(chatId, userMessage, assistantMessage, sources) {
     localStorage.setItem('chats', JSON.stringify(chats));
 
     renderChatList();
+
+    // Update chat title in header
+    chatTitle.textContent = chat.title;
 }
 
 function deleteChat(chatId) {
+    // Only delete the selected chat
     chats = chats.filter(c => c.id !== chatId);
     localStorage.setItem('chats', JSON.stringify(chats));
 
     if (currentChatId === chatId) {
-        createNewChat();
+        // If deleted chat was active, create a new default chat
+        if (chats.length === 0) {
+            createDefaultChat();
+        } else {
+            // Load the most recent chat
+            const lastChat = chats[chats.length - 1];
+            loadChat(lastChat.id);
+        }
     }
 
     renderChatList();
@@ -348,9 +419,25 @@ async function handleSendMessage() {
 // Utility Functions
 // ============================================
 
+function handleScroll() {
+    // Check if user is near the bottom
+    const threshold = 100; // pixels from bottom
+    const distanceFromBottom = messagesContainer.scrollHeight - messagesContainer.scrollTop - messagesContainer.clientHeight;
+
+    if (distanceFromBottom > threshold) {
+        // User scrolled up, show button
+        scrollToBottomBtn.style.display = 'flex';
+    } else {
+        // User is at bottom, hide button
+        scrollToBottomBtn.style.display = 'none';
+    }
+}
+
 function scrollToBottom() {
     setTimeout(() => {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        // Hide button when auto-scrolling to bottom
+        scrollToBottomBtn.style.display = 'none';
     }, 100);
 }
 

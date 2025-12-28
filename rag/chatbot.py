@@ -1,28 +1,41 @@
+import os
 import torch
+from pathlib import Path
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from rag.retriever import retrieve_chunks
 from rag.guards import is_emergency, is_greeting, is_farewell, is_invalid_query, is_english
 
-LLM_NAME = "Qwen/Qwen2.5-3B-Instruct" # "Qwen/Qwen2.5-1.5B-Instruct"
-
-print(f"🔄 Loading {LLM_NAME}...")
-
-tokenizer = AutoTokenizer.from_pretrained(LLM_NAME)
+MODEL_PATH = str(Path("./rag/model/Qwen2.5-3B-Instruct/Qwen2.5-3B-Instruct/snapshots/aa8e72537993ba99e69dfaafa59ed015b17504d1").resolve())
+print(f"🔄 Loading from: {MODEL_PATH}...")
 
 # Check for GPU
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"   Device: {device}")
 
+# Load tokenizer
+tokenizer = AutoTokenizer.from_pretrained(
+    MODEL_PATH, local_files_only=True, trust_remote_code=True
+)
+
 # Load model
-if device == "cuda":
-    model = AutoModelForCausalLM.from_pretrained(
-        LLM_NAME, dtype=torch.float16, device_map="auto", trust_remote_code=True
-    )
-else:
-    # CPU - use smaller precision
-    model = AutoModelForCausalLM.from_pretrained(
-        LLM_NAME, dtype=torch.float32, trust_remote_code=True, low_cpu_mem_usage=True
-    ).to(device)
+model = AutoModelForCausalLM.from_pretrained(
+    MODEL_PATH,
+    torch_dtype=torch.float16,
+    device_map="auto",
+    local_files_only=True,
+    trust_remote_code=True,
+    low_cpu_mem_usage=True,
+)
+
+# if device == "cuda":
+#     model = AutoModelForCausalLM.from_pretrained(
+#         LLM_NAME, dtype=torch.float16, device_map="auto", trust_remote_code=True
+#     )
+# else:
+#     # CPU - use smaller precision
+#     model = AutoModelForCausalLM.from_pretrained(
+#         LLM_NAME, dtype=torch.float32, trust_remote_code=True, low_cpu_mem_usage=True
+#     ).to(device)
 
 model.eval()
 print("✅ Model loaded!")
