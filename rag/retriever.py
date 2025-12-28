@@ -1,19 +1,53 @@
+# rag/retriever.py
+
 import pickle
-from pathlib import Path
 import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
+from functools import lru_cache
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "Data"
+# ============================================
+# Load Resources (once at startup)
+# ============================================
+
+print("🔄 Loading retriever...")
 
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
-index = faiss.read_index(str(DATA_DIR / "petmd.index"))
+index = faiss.read_index("./Data/petmd.index")
 
-with open(DATA_DIR / "documents_semantic.pkl", "rb") as f:
+with open("./Data/documents_semantic.pkl", "rb") as f:
     documents = pickle.load(f)
 
-def retrieve_chunks(query, k=8):
-    query_emb = embedder.encode([query.lower()])
-    _, I = index.search(np.array(query_emb), k)
-    return [documents[i] for i in I[0]]
+print(f"✅ Retriever ready! ({len(documents)} documents)")
+
+# ============================================
+# Cached Embedding
+# ============================================
+
+@lru_cache(maxsize=200)
+def get_embedding(text: str) -> tuple:
+    """Cache embeddings for repeated queries"""
+    return tuple(embedder.encode([text.lower()])[0])
+
+# ============================================
+# Main Retrieval Function
+# ============================================
+
+def retrieve_chunks(query: str, k: int = 5) -> list:
+    """Retrieve top-k relevant chunks"""
+
+    # Get query embedding (cached)
+    query_emb = np.array([get_embedding(query)])
+
+    # Search FAISS index
+    distances, indices = index.search(query_emb, k)
+
+    # Get documents
+    results = []
+    for i, idx in enumerate(indices[0]):
+        if 0 <= idx < len(documents):
+            doc = documents[idx].copy()
+            doc["score"] = float(distances[0][i])
+            results.append(doc)
+
+    return results

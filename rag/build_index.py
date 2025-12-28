@@ -1,15 +1,11 @@
 import json
 import pickle
-from pathlib import Path
-import faiss            # type: ignore
-import numpy as np      # type: ignore
-from sentence_transformers import SentenceTransformer   # type: ignore
-from sklearn.metrics.pairwise import cosine_similarity  # type: ignore
+import faiss
+import numpy as np
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "Data"
-
-with open(DATA_DIR / "articles_data.json", "r", encoding="utf-8") as f:
+with open("./Data/articles_data.json", "r", encoding="utf-8") as f:
     articles = json.load(f)
 
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
@@ -59,8 +55,8 @@ embeddings = embedder.encode(texts)
 index = faiss.IndexFlatL2(embeddings.shape[1])
 index.add(np.array(embeddings))
 
-faiss.write_index(index, str(DATA_DIR / "petmd.index"))
-with open(DATA_DIR / "documents_semantic.pkl", "wb") as f:
+faiss.write_index(index, "./Data/petmd.index")
+with open("./Data/documents_semantic.pkl", "wb") as f:
     pickle.dump(documents, f)
 
 print("FAISS index built.")
