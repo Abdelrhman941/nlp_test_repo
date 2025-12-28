@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Health Assistant</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <button id="new-chat-btn" class="new-chat-btn">
+                    <span class="icon">+</span>
+                    <span>New Chat</span>
+                </button>
+            </div>
+
+            <div class="chat-list" id="chat-list">
+                <!-- Chat items will be dynamically added here -->
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="main-content">
+            <!-- Chat Header -->
+            <header class="chat-header">
+                <button id="sidebar-toggle" class="sidebar-toggle" title="Toggle sidebar">
+                    ☰
+                </button>
+                <h1 class="chat-title" id="chat-title">Pet Health Assistant</h1>
+            </header>
+
+            <!-- Messages Container -->
+            <div class="messages-container" id="messages-container">
+                <div class="welcome-screen" id="welcome-screen">
+                    <div class="welcome-icon">🐾</div>
+                    <h2>Welcome to Pet Health Assistant</h2>
+                    <p>Ask me anything about your pet's health and I'll help you with reliable information.</p>
+                    <div class="example-prompts">
+                        <button class="example-prompt" data-prompt="What should I feed my dog?">
+                            What should I feed my dog?
+                        </button>
+                        <button class="example-prompt" data-prompt="How often should I take my cat to the vet?">
+                            How often should I take my cat to the vet?
+                        </button>
+                        <button class="example-prompt" data-prompt="What are signs of a healthy pet?">
+                            What are signs of a healthy pet?
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <textarea
+                        id="message-input"
+                        class="message-input"
+                        placeholder="Ask about your pet's health..."
+                        rows="1"
+                    ></textarea>
+                    <button id="send-btn" class="send-btn" disabled>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M2 10L18 10M18 10L11 3M18 10L11 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
