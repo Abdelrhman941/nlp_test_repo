@@ -16,18 +16,12 @@ print(f"   Device: {device}")
 # Load model
 if device == "cuda":
     model = AutoModelForCausalLM.from_pretrained(
-        LLM_NAME,
-        torch_dtype=torch.float16,
-        device_map="auto",
-        trust_remote_code=True
+        LLM_NAME, dtype=torch.float16, device_map="auto", trust_remote_code=True
     )
 else:
     # CPU - use smaller precision
     model = AutoModelForCausalLM.from_pretrained(
-        LLM_NAME,
-        torch_dtype=torch.float32,
-        trust_remote_code=True,
-        low_cpu_mem_usage=True
+        LLM_NAME, dtype=torch.float32, trust_remote_code=True, low_cpu_mem_usage=True
     ).to(device)
 
 model.eval()
