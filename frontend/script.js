@@ -115,9 +115,10 @@ function createDefaultChat() {
     renderChatList();
 
     // Update UI
+    messagesContainer.innerHTML = '';
+    messagesContainer.appendChild(welcomeScreen);
     welcomeScreen.style.display = 'block';
     chatTitle.textContent = 'Untitled';
-    messagesContainer.innerHTML = '';
 
     // Highlight the new chat in sidebar
     document.querySelectorAll('.chat-item').forEach(item => {
@@ -141,11 +142,14 @@ function createNewChat() {
     currentChatId = chatId;
     renderChatList();
 
-    // Clear UI
+    // Clear UI and restore welcome screen
     messagesContainer.innerHTML = '';
+    messagesContainer.appendChild(welcomeScreen);
     welcomeScreen.style.display = 'block';
     chatTitle.textContent = 'Untitled';
     messageInput.value = '';
+    messageInput.style.height = 'auto';
+    handleInputChange();
     messageInput.focus();
 
     // Update active state
