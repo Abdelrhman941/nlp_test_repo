@@ -19,7 +19,7 @@ newspaper3k>=0.2.8
 fastapi==0.125.0
 uvicorn[standard]==0.38.0
 pydantic==2.12.5
-python-multipart==0.0.20
+python-multipart==0.0.22
 python-dotenv==1.2.1
 tqdm>=4.67.0
 numpy>=2.2.0
